@@ -24,17 +24,21 @@ class Dino:
     '''
 
 
-    X_POS = 200
+    X = 200
     WIDTH = 30
     HEIGHT = 100
     
     def __init__(self):
-        self.y_pos = 300
+        self.x = 200
+        self.y = 300
 
-
-
-        self.jumping = False
-        self.jump_count = 0
+        self.width = 30
+        self.height = 100
+        
+        self.y1 = self.y
+        self.tick_count = 0
+        self.vel = 0
+        
 
 
     def draw(self):
@@ -42,24 +46,40 @@ class Dino:
         draws a rectangle representing the player
         :return: None
         '''
-        pygame.draw.rect(win, COLOUR ,(self.X_POS, self.y_pos, self.WIDTH, self.HEIGHT))
+        pygame.draw.rect(win, COLOUR ,(self.x, self.y, self.width, self.height))
 
 
     def jump(self):
         '''
-        increase upward vel when jump button is pressed
+        jumps the dino 
         :return: None
         '''
-        pass
+        self.vel = -10.5
+        self.tick_count = 0
+        # change height
+        self.y1 = self.y
 
 
-    
     def move(self):
         '''
-        updates upward vel
+        updates the dino's position if it has jumped
         :return: None
         '''
-        pass
+        self.tick_count += 1
+
+        d = self.vel*self.tick_count + 1.5*self.tick_count**2
+
+        if d < 0:
+            d -= 2
+
+        
+        self.y = self.y + d
+        if self.y >= 300:
+            self.y = 300
+
+
+        
+        
 
 
 class Cactus:
@@ -69,43 +89,17 @@ class Cactus:
     pass
 
 
-class Base:
-    '''
-    represents the base
-    '''
 
-    X_POS = 0
-    Y_POS = 400
-    WIDTH = 1000
-    HEIGHT = 5
-    
-
-    def __init__(self):
-        self.drawn = False
-
-
-    def draw(self):
-        '''
-        draw the base to the screen
-        :return: None
-        '''
-         
-        pygame.draw.rect(win, COLOUR ,(self.X_POS, self.Y_POS, self.WIDTH, self.HEIGHT))
-
-
-
-
-
-
-
-def draw_window(win, base, dino):
+def draw_window(win, dino):
     '''
     draws all of the objects to the window
     :return: None
     '''
 
     win.fill((255, 255, 255))
-    base.draw()
+
+    # draw base
+    pygame.draw.rect(win, COLOUR ,(0, 400, 1000, 5))
     dino.draw()
 
     pygame.display.update()
@@ -117,36 +111,29 @@ def draw_window(win, base, dino):
 
 def eval_genomes():
 
-    base = Base()
     dino = Dino()
 
-    def update():
-        '''
-        called every frame
-        :return: None
-        '''
-
-        keys = pygame.key.get_pressed()
-
-        if keys[pygame.K_SPACE]:
-            dino.jump()
-
-        dino.move()
     
-        draw_window(win, base, dino)
-        time.sleep(0.05)
-
     running = True
     while running:
-    
-        update()
-
-        # quit game if x is pressed
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
                 break
+
+        keys = pygame.key.get_pressed()
+
+        dino.move()
+        if keys[pygame.K_SPACE]:
+            dino.jump()
+            
+        
+        draw_window(win, dino)
+        time.sleep(0.05)
+    
+        
+
 
 
 eval_genomes()
