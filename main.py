@@ -38,6 +38,7 @@ class Dino:
         self.y1 = self.y
         self.tick_count = 0
         self.vel = 0
+        self.jumping = False
         
 
 
@@ -54,10 +55,12 @@ class Dino:
         jumps the dino 
         :return: None
         '''
-        self.vel = -10.5
-        self.tick_count = 0
-        # change height
-        self.y1 = self.y
+        if not self.jumping:
+            self.jumping = True
+            self.vel = -10.5
+            self.tick_count = 0
+            # change height
+            self.y1 = self.y
 
 
     def move(self):
@@ -67,7 +70,7 @@ class Dino:
         '''
         self.tick_count += 1
 
-        d = self.vel*self.tick_count + 1.5*self.tick_count**2
+        d = self.vel*self.tick_count + 1.2*self.tick_count**2
 
         if d < 0:
             d -= 2
@@ -75,7 +78,16 @@ class Dino:
         
         self.y = self.y + d
         if self.y >= 300:
+            self.jumping = False
             self.y = 300
+
+
+    def duck(self):
+        '''
+        allows the dino to duck under obstacles
+        :return: None
+        '''
+        pass
 
 
         
