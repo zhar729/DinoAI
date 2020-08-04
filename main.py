@@ -22,11 +22,6 @@ class Dino:
     '''
     represents the player
     '''
-
-
-    X = 200
-    WIDTH = 30
-    HEIGHT = 100
     
     def __init__(self):
         self.x = 200
@@ -34,11 +29,13 @@ class Dino:
 
         self.width = 30
         self.height = 100
-        
-        self.y1 = self.y
-        self.tick_count = 0
+
+        self.jump_count = 0
+        self.duck_count = 0
         self.vel = 0
+
         self.jumping = False
+        self.ducking = False
         
 
 
@@ -55,12 +52,11 @@ class Dino:
         jumps the dino 
         :return: None
         '''
-        if not self.jumping:
+        if not self.jumping and not self.ducking:
             self.jumping = True
             self.vel = -10.5
-            self.tick_count = 0
-            # change height
-            self.y1 = self.y
+            self.jump_count = 0
+
 
 
     def move(self):
@@ -68,18 +64,22 @@ class Dino:
         updates the dino's position if it has jumped
         :return: None
         '''
-        self.tick_count += 1
+        self.jump_count += 1
+       
 
-        d = self.vel*self.tick_count + 1.2*self.tick_count**2
+        d = self.vel*self.jump_count + 1.2*self.jump_count**2
 
         if d < 0:
             d -= 2
 
-        
         self.y = self.y + d
         if self.y >= 300:
             self.jumping = False
             self.y = 300
+
+        self.duck_count += 1
+
+       
 
 
     def duck(self):
@@ -87,13 +87,16 @@ class Dino:
         allows the dino to duck under obstacles
         :return: None
         '''
-        pass
+        if not self.ducking and not self.jumping:
+            self.ducking = True
+            self.duck_count = 0
+
+            
+
 
 
         
         
-
-
 class Cactus:
     '''
     represents the obstacles that the dino has to jump over
@@ -118,13 +121,9 @@ def draw_window(win, dino):
 
 
 
-
-
-
 def eval_genomes():
-
+    
     dino = Dino()
-
     
     running = True
     while running:
@@ -137,8 +136,11 @@ def eval_genomes():
         keys = pygame.key.get_pressed()
 
         dino.move()
-        if keys[pygame.K_SPACE]:
+        if keys[pygame.K_UP]:
             dino.jump()
+
+        if keys[pygame.K_DOWN]:
+            dino.duck()
             
         
         draw_window(win, dino)
