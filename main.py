@@ -3,6 +3,7 @@ import sys
 import neat
 import pygame
 import time
+import random
 pygame.init()
 pygame.font.init()
 
@@ -109,11 +110,48 @@ class Cactus:
     '''
     represents the obstacles that the dino has to jump over
     '''
-    pass
+
+    TYPES = ['short_cactus', 'tall_cactus', 'bird']
+
+    def __init__(self):
+        self.width = 30
+        self.passed = False
+        self.x = WIN_WIDTH
+        self.vel = 15
+
+        self.type = self.TYPES[random.randint(0, 2)]
+        if self.type == 'short_cactus':
+            self.y = 350
+            self.height = 50
+        if self.type == 'tall_cactus':
+            self.y = 300
+            self.height = 100
+        if self.type == 'bird':
+            self.y = 320
+            self.height = 50
+
+
+    def move(self):
+        '''
+        moves the cactus across the screen
+        :return: None
+        '''
+        self.x -= self.vel
+
+    def draw(self):
+        '''
+        draws the obstacle to the screen
+        :return: None
+        '''
+        pygame.draw.rect(win, COLOUR ,(self.x, self.y, self.width, self.height))
+
+        
 
 
 
-def draw_window(win, dino):
+
+
+def draw_window(win, dino, cacti):
     '''
     draws all of the objects to the window
     :return: None
@@ -125,6 +163,9 @@ def draw_window(win, dino):
     pygame.draw.rect(win, COLOUR ,(0, 400, 1000, 5))
     dino.draw()
 
+    for cactus in cacti:
+        cactus.draw()
+
     pygame.display.update()
 
 
@@ -132,7 +173,8 @@ def draw_window(win, dino):
 def eval_genomes():
     
     dino = Dino()
-    
+    cacti = [Cactus()]
+
     running = True
     while running:
         for event in pygame.event.get():
@@ -143,6 +185,8 @@ def eval_genomes():
 
         keys = pygame.key.get_pressed()
 
+
+
         dino.move()
         if keys[pygame.K_UP]:
             dino.jump()
@@ -150,8 +194,10 @@ def eval_genomes():
         if keys[pygame.K_DOWN]:
             dino.duck()
             
-        
-        draw_window(win, dino)
+        for cactus in cacti:
+            cactus.move()
+
+        draw_window(win, dino, cacti)
         time.sleep(0.05)
     
         
