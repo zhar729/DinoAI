@@ -65,7 +65,6 @@ class Dino:
         :return: None
         '''
         self.jump_count += 1
-       
 
         d = self.vel*self.jump_count + 1.2*self.jump_count**2
 
@@ -76,10 +75,16 @@ class Dino:
         if self.y >= 300:
             self.jumping = False
             self.y = 300
+            self.height = 100
 
+        
         self.duck_count += 1
 
-       
+        # when the ducking has ended
+        if self.duck_count <= 25 and not self.jumping:
+            self.ducking = False
+            self.y = 300
+            self.height = 100
 
 
     def duck(self):
@@ -90,13 +95,12 @@ class Dino:
         if not self.ducking and not self.jumping:
             self.ducking = True
             self.duck_count = 0
+            self.height = 50
+            self.y = 350
+    
 
             
 
-
-
-        
-        
 class Cactus:
     '''
     represents the obstacles that the dino has to jump over
