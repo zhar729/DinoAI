@@ -184,19 +184,42 @@ def eval_genomes():
                 break
 
         keys = pygame.key.get_pressed()
-
-
-
-        dino.move()
         if keys[pygame.K_UP]:
             dino.jump()
 
         if keys[pygame.K_DOWN]:
             dino.duck()
             
+        cactus_ind = 0
+        if len(cacti) > 1 and dino.x > cacti[0].x + cacti[0].width:
+            pipe_ind = 1
+
+
+
+
+        add_cactus = False
+        rem = []
+
         for cactus in cacti:
+
+            if not cactus.passed and cactus.x < dino.x:
+                    cactus.passed = True
+                    add_cactus = True
+
+            if cactus.x <= 0:
+                rem.append(cactus)
+
+
             cactus.move()
 
+        if add_cactus:
+            cacti.append(Cactus())
+
+        for r in rem:
+            cacti.remove(r)
+
+
+        dino.move()
         draw_window(win, dino, cacti)
         time.sleep(0.05)
     
