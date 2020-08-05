@@ -80,8 +80,12 @@ class Dino:
         
         self.duck_count += 1
 
+        if self.ducking:
+            self.height = 50
+            self.y = 350
+
         # when the ducking has ended
-        if self.duck_count <= 25 and not self.jumping:
+        if self.duck_count >= 15 and not self.jumping:
             self.ducking = False
             self.y = 300
             self.height = 100
