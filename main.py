@@ -7,15 +7,20 @@ import random
 pygame.init()
 pygame.font.init()
 
-GRAVITY = 9.81
+GREY = (100, 100, 100)
+LIGHT_GREY = (15, 15, 15)
+RED = (255, 30, 30)
+GREEN = (30, 255, 30)
+BLUE = (30, 30, 255)
 
-COLOUR = (100, 100, 100)
+COLOURS = [GREY, LIGHT_GREY, RED, GREEN, BLUE]
 
 WIN_HEIGHT = 500
 WIN_WIDTH = 800
 
+
 win = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
-pygame.display.set_caption('Chrome dino game')
+pygame.display.set_caption('DinoAI')
 
 
 
@@ -26,10 +31,10 @@ class Dino:
     
     def __init__(self):
         self.x = 200
-        self.y = 300
+        self.y = 310
 
         self.width = 30
-        self.height = 100
+        self.height = 110
 
         self.jump_count = 0
         self.duck_count = 0
@@ -37,15 +42,16 @@ class Dino:
 
         self.jumping = False
         self.ducking = False
-        
 
+        self.dead = False
+        
 
     def draw(self):
         '''
         draws a rectangle representing the player
         :return: None
         '''
-        pygame.draw.rect(win, COLOUR ,(self.x, self.y, self.width, self.height))
+        pygame.draw.rect(win, GREY, (self.x, self.y, self.width, self.height))
 
 
     def jump(self):
@@ -73,23 +79,23 @@ class Dino:
             d -= 2
 
         self.y = self.y + d
-        if self.y >= 300:
+        if self.y >= 290:
             self.jumping = False
-            self.y = 300
-            self.height = 100
+            self.y = 290
+            self.height = 110
 
         
         self.duck_count += 1
 
         if self.ducking:
-            self.height = 50
-            self.y = 350
+            self.height = 55
+            self.y = 345
 
         # when the ducking has ended
         if self.duck_count >= 12 and not self.jumping:
             self.ducking = False
-            self.y = 300
-            self.height = 100
+            self.y = 290
+            self.height = 110
 
 
     def duck(self):
@@ -100,8 +106,8 @@ class Dino:
         if not self.ducking and not self.jumping:
             self.ducking = True
             self.duck_count = 0
-            self.height = 50
-            self.y = 350
+            self.height = 55
+            self.y = 345
     
 
             
@@ -117,7 +123,7 @@ class Cactus:
         self.width = 30
         self.passed = False
         self.x = WIN_WIDTH
-        self.vel = 15
+        self.vel = 20
 
         self.type = self.TYPES[random.randint(0, 2)]
         if self.type == 'short_cactus':
@@ -127,7 +133,7 @@ class Cactus:
             self.y = 300
             self.height = 100
         if self.type == 'bird':
-            self.y = 320
+            self.y = 250
             self.height = 50
 
 
@@ -143,12 +149,9 @@ class Cactus:
         draws the obstacle to the screen
         :return: None
         '''
-        pygame.draw.rect(win, COLOUR ,(self.x, self.y, self.width, self.height))
+        pygame.draw.rect(win, GREY ,(self.x, self.y, self.width, self.height))
 
         
-
-
-
 
 
 def draw_window(win, dino, cacti):
@@ -160,7 +163,7 @@ def draw_window(win, dino, cacti):
     win.fill((255, 255, 255))
 
     # draw base
-    pygame.draw.rect(win, COLOUR ,(0, 400, 1000, 5))
+    pygame.draw.rect(win, GREY ,(0, 400, 1000, 5))
     dino.draw()
 
     for cactus in cacti:
@@ -209,11 +212,13 @@ def eval_genomes():
             if cactus.x <= 0:
                 rem.append(cactus)
 
+                
 
             cactus.move()
 
         if add_cactus:
             cacti.append(Cactus())
+            
 
         for r in rem:
             cacti.remove(r)
@@ -221,7 +226,7 @@ def eval_genomes():
 
         dino.move()
         draw_window(win, dino, cacti)
-        time.sleep(0.05)
+        time.sleep(0.04)
     
         
 
