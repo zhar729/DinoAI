@@ -1,6 +1,6 @@
 # DinoAI
 
-A NEAT neural network which uses the genetic algorithm to teach itself how to play Chrome's Dinosaur game.
+A NEAT neural network which uses the genetic algorithm that teaches itself how to play a simple game based off of Chrome's dino game.
 
 
 ## Useful links
