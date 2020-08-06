@@ -49,9 +49,6 @@ class Dino:
 
         self.dead = False
         self.score = 0
-
-        self.ge = None
-        self.net = None
         
 
     def draw(self):
@@ -162,7 +159,7 @@ class Cactus:
         
 
 
-def draw_window(win, dino, cacti):
+def draw_window(win, dinos, cacti):
     '''
     draws all of the objects to the window
     :return: None
@@ -170,7 +167,10 @@ def draw_window(win, dino, cacti):
 
     win.fill((255, 255, 255))
 
-    text = FONT.render('Score: {}'.format(str(dino.score)), 1, (100, 100, 100))
+    for dino in dinos:
+        text = FONT.render('Score: {}'.format(str(dino.score)), 1, (100, 100, 100))
+
+
     win.blit(text, (WIN_WIDTH - 10 - text.get_width(), 10))
 
     # draw base
@@ -187,10 +187,22 @@ def draw_window(win, dino, cacti):
 
 
 
-def eval_genomes():
-    
-    dino = Dino()
+def eval_genomes(genomes, config):
+
     cacti = [Cactus()]
+
+
+    dinos = []
+    nets = []
+    ge = []
+
+    for _, g in genomes:
+        net = neat.nn.FeedForwardNetwork.create(g, config)
+        nets.append(net)
+        dinos.append(Dino)
+        g.fitness = 0
+        ge.append(g)
+
 
     running = True
     while running:
@@ -200,21 +212,13 @@ def eval_genomes():
                 sys.exit()
                 break
 
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_UP]:
-            dino.jump()
-
-        if keys[pygame.K_DOWN]:
-            dino.duck()
+        
             
-        cactus_ind = 0
-        if len(cacti) > 1 and dino.x > cacti[0].x + cacti[0].width:
-            pipe_ind = 1
-
+        if len(dinos) == 0:
+            break
 
         add_cactus = False
         rem = []
-
         for cactus in cacti:
 
             if not cactus.passed and cactus.x < dino.x:
@@ -230,17 +234,38 @@ def eval_genomes():
 
             cactus.move()
 
+
+
+        for x, dino in enumerate(dinos):
+            dino.move()
+            ge.[x].fitness += 0.1       
+
+            # the value of the output neuron
+            output = nets[x].activate() 
+
+
+            if output[0] > 0.5 and not output[1] > 0.5:
+                dino.jump()
+            if output[1] > 0.5 and not output[1] > 0.5:
+                dino.duck()
+
+
+
         if add_cactus:
-            if not dino.dead:
-                dino.score += 1
-            cacti.append(Cactus())
+            for dino in dinos:
+                if not dino.dead:
+                    dino.score += 1
+                cacti.append(Cactus())
             
 
         for r in rem:
             cacti.remove(r)
 
 
-        dino.move()
+        for dino in dinos
+            dino.move()
+
+
         draw_window(win, dino, cacti)
         time.sleep(0.04)
     
@@ -250,8 +275,28 @@ def eval_genomes():
 
 eval_genomes()
 
+def run(config_path):
+    config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction,
+                                neat.DefaultSpeciesSet, neat.DefaultStagnation,
+                                config_path)
+
+    # create the population
+    popul = neat.Population(config)
+
+    
+    # show progress in the terminal
+    popul.add_reporter(neat.StdOutReporter(True))
+    stats = neat.StatisticsReporter()
+    popul.add_reporter(stats)
+
+    # run for up to 50 gens
+    winner.popul.run(eval_genomes, 50)
+
 
 if __name__ == '__main__':
+    # find the config-feedforward.txt file
     local_dir = os.path.dirname(__file__)
     config_path = os.path.join(local_dir, 'config-feedforward.txt')
     run(config_path)
+
+
