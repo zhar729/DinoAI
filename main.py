@@ -18,6 +18,8 @@ COLOURS = [GREY, LIGHT_GREY, RED, GREEN, BLUE]
 WIN_HEIGHT = 500
 WIN_WIDTH = 800
 
+types_of_cactus = ['short_cactus', 'tall_cactus', 'bird']
+
 FONT = pygame.font.SysFont('arial', 45)
 
 
@@ -199,7 +201,7 @@ def eval_genomes(genomes, config):
     for _, g in genomes:
         net = neat.nn.FeedForwardNetwork.create(g, config)
         nets.append(net)
-        dinos.append(Dino)
+        dinos.append(Dino())
         g.fitness = 0
         ge.append(g)
 
@@ -213,41 +215,51 @@ def eval_genomes(genomes, config):
                 break
 
         
-            
-        if len(dinos) == 0:
-            break
 
         add_cactus = False
         rem = []
         for cactus in cacti:
 
-            if not cactus.passed and cactus.x < dino.x:
-                    cactus.passed = True
-                    add_cactus = True
+            for dino in dinos:
+                if not cactus.passed and cactus.x < dino.x:
+                        cactus.passed = True
+                        add_cactus = True
+
+                if pygame.Rect.colliderect(pygame.Rect(dino.x, dino.y, dino.width, dino.height), 
+                                        pygame.Rect(cactus.x, cactus.y, cactus.width, cactus.height)):
+                    dino.dead = True
 
             if cactus.x <= 0:
                 rem.append(cactus)
 
-            if  pygame.Rect.colliderect(pygame.Rect(dino.x, dino.y, dino.width, dino.height), 
-                                        pygame.Rect(cactus.x, cactus.y, cactus.width, cactus.height)):
-                dino.dead = True
-
             cactus.move()
+
+        
 
 
 
         for x, dino in enumerate(dinos):
             dino.move()
-            ge.[x].fitness += 0.1       
+
+
+            ge[x].fitness += 0.1       
 
             # the value of the output neuron
-            output = nets[x].activate() 
+            output = nets[x].activate([cacti[0].x, types_of_cactus.index(cacti[0].type)]) 
 
 
-            if output[0] > 0.5 and not output[1] > 0.5:
+            if output[0] >= 0.75:
                 dino.jump()
-            if output[1] > 0.5 and not output[1] > 0.5:
+            if output[0] <= 0.25:
                 dino.duck()
+
+        
+            if dino.dead:
+                ge[x].fitness -= 1
+                dinos.pop(x)
+                nets.pop(x)
+                ge.pop(x)
+                
 
 
 
@@ -255,25 +267,23 @@ def eval_genomes(genomes, config):
             for dino in dinos:
                 if not dino.dead:
                     dino.score += 1
-                cacti.append(Cactus())
+                dino.score += 1 
+            for g in ge:
+                g.fitness += 5
+
+            cacti.append(Cactus())
             
 
         for r in rem:
             cacti.remove(r)
 
+        if len(dinos) == 0:
+            break
 
-        for dino in dinos
-            dino.move()
-
-
-        draw_window(win, dino, cacti)
+        draw_window(win, dinos, cacti)
         time.sleep(0.04)
     
         
-
-
-
-eval_genomes()
 
 def run(config_path):
     config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction,
@@ -290,7 +300,7 @@ def run(config_path):
     popul.add_reporter(stats)
 
     # run for up to 50 gens
-    winner.popul.run(eval_genomes, 50)
+    winner = popul.run(eval_genomes, 50)
 
 
 if __name__ == '__main__':
