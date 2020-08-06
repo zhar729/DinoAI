@@ -18,6 +18,8 @@ COLOURS = [GREY, LIGHT_GREY, RED, GREEN, BLUE]
 WIN_HEIGHT = 500
 WIN_WIDTH = 800
 
+FONT = pygame.font.SysFont('arial', 45)
+
 
 win = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
 pygame.display.set_caption('DinoAI')
@@ -44,6 +46,7 @@ class Dino:
         self.ducking = False
 
         self.dead = False
+        self.score = 0
         
 
     def draw(self):
@@ -162,13 +165,19 @@ def draw_window(win, dino, cacti):
 
     win.fill((255, 255, 255))
 
+    text = FONT.render('Score: {}'.format(str(dino.score)), 1, (100, 100, 100))
+    win.blit(text, (WIN_WIDTH - 10 - text.get_width(), 10))
+
     # draw base
     pygame.draw.rect(win, GREY ,(0, 400, 1000, 5))
-    dino.draw()
+
+    if not dino.dead:
+        dino.draw()
 
     for cactus in cacti:
         cactus.draw()
 
+    
     pygame.display.update()
 
 
@@ -198,8 +207,6 @@ def eval_genomes():
             pipe_ind = 1
 
 
-
-
         add_cactus = False
         rem = []
 
@@ -212,11 +219,15 @@ def eval_genomes():
             if cactus.x <= 0:
                 rem.append(cactus)
 
-                
+            if  pygame.Rect.colliderect(pygame.Rect(dino.x, dino.y, dino.width, dino.height), 
+                                        pygame.Rect(cactus.x, cactus.y, cactus.width, cactus.height)):
+                dino.dead = True
 
             cactus.move()
 
         if add_cactus:
+            if not dino.dead:
+                dino.score += 1
             cacti.append(Cactus())
             
 
