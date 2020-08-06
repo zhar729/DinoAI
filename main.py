@@ -38,6 +38,8 @@ class Dino:
         self.width = 30
         self.height = 110
 
+        self.colour = COLOURS[random.randint(0,2)]
+
         self.jump_count = 0
         self.duck_count = 0
         self.vel = 0
@@ -47,6 +49,9 @@ class Dino:
 
         self.dead = False
         self.score = 0
+
+        self.ge = None
+        self.net = None
         
 
     def draw(self):
@@ -54,7 +59,7 @@ class Dino:
         draws a rectangle representing the player
         :return: None
         '''
-        pygame.draw.rect(win, GREY, (self.x, self.y, self.width, self.height))
+        pygame.draw.rect(win, self.colour, (self.x, self.y, self.width, self.height))
 
 
     def jump(self):
@@ -244,3 +249,9 @@ def eval_genomes():
 
 
 eval_genomes()
+
+
+if __name__ == '__main__':
+    local_dir = os.path.dirname(__file__)
+    config_path = os.path.join(local_dir, 'config-feedforward.txt')
+    run(config_path)
