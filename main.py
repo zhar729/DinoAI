@@ -239,7 +239,7 @@ def eval_genomes():
         for r in rem:
             cacti.remove(r)
 
-
+            
         dino.move()
         draw_window(win, dino, cacti)
         time.sleep(0.04)
