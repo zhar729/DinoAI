@@ -224,9 +224,6 @@ def eval_genomes():
             if cactus.x <= 0:
                 rem.append(cactus)
 
-            if  pygame.Rect.colliderect(pygame.Rect(dino.x, dino.y, dino.width, dino.height), 
-                                        pygame.Rect(cactus.x, cactus.y, cactus.width, cactus.height)):
-                dino.dead = True
 
             cactus.move()
 
@@ -245,13 +242,7 @@ def eval_genomes():
         time.sleep(0.04)
     
         
-
-
-
 eval_genomes()
 
 
-if __name__ == '__main__':
-    local_dir = os.path.dirname(__file__)
-    config_path = os.path.join(local_dir, 'config-feedforward.txt')
-    run(config_path)
+
