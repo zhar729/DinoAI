@@ -20,7 +20,6 @@ WIN_WIDTH = 800
 
 FONT = pygame.font.SysFont('arial', 45)
 
-
 win = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
 pygame.display.set_caption('DinoAI')
 
